@@ -55,8 +55,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-WHITENOISE_USE_FINDERS = True
-
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -159,6 +157,8 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+WHITENOISE_USE_FINDERS = True
 
 # Archivos subidos (fotos de comprobantes)
 MEDIA_URL = "/media/"
