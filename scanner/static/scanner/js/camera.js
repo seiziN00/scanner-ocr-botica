@@ -37,7 +37,11 @@
     idleMsg.textContent = "Solicitando permiso de cámara…";
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1920 }, // Para alta resolución
+          height: { ideal: 1080 }
+        },
         audio: false,
       });
     } catch (err) {
