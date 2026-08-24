@@ -146,11 +146,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-# Archivos subidos (fotos de comprobantes)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-# Mantener compatibilidad con django-cloudinary-storage
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_DIRS = [
+    BASE_DIR / "scanner" / "static",
+]
 
 STORAGES = {
     "default": {
@@ -162,12 +160,16 @@ STORAGES = {
     },
 }
 
+# Archivos subidos (fotos de comprobantes)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 # Credenciales de Cloudinary
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
     "API_KEY": env("CLOUDINARY_API_KEY"),
     "API_SECRET": env("CLOUDINARY_API_SECRET"),
-    "STATICFILES_MANIFEST_ROOT": None,
+    # "STATICFILES_MANIFEST_ROOT": None,
 }
 
 

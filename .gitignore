@@ -16,3 +16,7 @@ media/
 
 # Reference files
 reference_files/*
+
+# Static Files
+staticfiles
+staticfiles/*
