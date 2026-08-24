@@ -147,6 +147,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Archivos subidos (fotos de comprobantes)
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Mantener compatibilidad con django-cloudinary-storage
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 STORAGES = {
     "default": {
