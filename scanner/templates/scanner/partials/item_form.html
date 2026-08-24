@@ -1,0 +1,137 @@
+{% load scanner_extras l10n %}
+{# Modal crear/editar ítem. Se inserta en #modal-root vía HTMX. #}
+<div class="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-h">
+      <div>
+        <h3 id="mTitle">{% if is_edit %}Editar producto{% else %}Nuevo producto{% endif %}</h3>
+        <p>
+          {% if is_edit %}Corrige los datos detectados{% else %}Ingresa el detalle del producto{% endif %}
+        </p>
+      </div>
+      <button type="button" class="icon-btn" data-close-modal aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <form hx-post="{{ form_action }}" hx-target="#modal-root" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="modal-b">
+        {% if errors.non_field_errors %}
+        <div class="form-errors">{{ errors.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <div class="field s12">
+          <label for="f_producto">Producto</label>
+          <input
+            id="f_producto" name="producto" required maxlength="200"
+            placeholder="Ej. Paracetamol 500 mg Tableta"
+            value="{{ values.producto }}"
+            class="{% if errors.producto %}invalid{% endif %}"
+          />
+          {% if errors.producto %}<span class="error">{{ errors.producto.0 }}</span>{% endif %}
+        </div>
+
+        <div class="field s3">
+          <label for="f_cantidad">Cantidad</label>
+          <input
+            id="f_cantidad" name="cantidad" type="number" min="1" step="1" required
+            inputmode="numeric"
+            {# unlocalize: el input type=number exige punto decimal, no coma #}
+            value="{{ values.cantidad|unlocalize }}"
+            class="{% if errors.cantidad %}invalid{% endif %}"
+          />
+          {% if errors.cantidad %}<span class="error">{{ errors.cantidad.0 }}</span>{% endif %}
+        </div>
+
+        <div class="field s3">
+          <label for="f_und">UND</label>
+          {% with current_und=values.unidad %}
+          <select id="f_und" name="unidad">
+            {% if current_und not in unidades %}
+            {# el lector pudo devolver una unidad fuera de la lista: conservarla #}
+            <option value="{{ current_und }}" selected>{{ current_und }}</option>
+            {% endif %}
+            {% for u in unidades %}
+            <option value="{{ u }}" {% if u == current_und %}selected{% endif %}>{{ u }}</option>
+            {% endfor %}
+          </select>
+          {% endwith %}
+        </div>
+
+        <div class="field s3">
+          <label for="f_punit">P. Unit. (S/)</label>
+          <input
+            id="f_punit" name="precio_unitario" type="number" min="0" step="0.01"
+            required inputmode="decimal"
+            {# unlocalize: el input type=number exige punto decimal, no coma #}
+            value="{{ values.precio_unitario|unlocalize }}"
+            class="{% if errors.precio_unitario %}invalid{% endif %}"
+          />
+          {% if errors.precio_unitario %}<span class="error">{{ errors.precio_unitario.0 }}</span>{% endif %}
+        </div>
+
+        <div class="field s3">
+          <label for="f_lote">Lote</label>
+          <input
+            id="f_lote" name="lote" maxlength="60" placeholder="Ej. B1042"
+            value="{{ values.lote }}"
+          />
+        </div>
+
+        <div class="field s6">
+          <label for="f_lab">Laboratorio</label>
+          <input
+            id="f_lab" name="laboratorio" maxlength="120" placeholder="Ej. Medifarma"
+            value="{{ values.laboratorio }}"
+          />
+        </div>
+
+        <div class="field s6">
+          <label for="f_venc">Vencimiento</label>
+          <input
+            id="f_venc" name="vencimiento" type="month"
+            value="{{ values.vencimiento }}"
+            class="{% if errors.vencimiento %}invalid{% endif %}"
+          />
+          {% if errors.vencimiento %}<span class="error">{{ errors.vencimiento.0 }}</span>{% endif %}
+        </div>
+
+        <div class="preview">
+          <span>Vista previa · P. Total (cantidad × precio)</span>
+          <strong id="prevTotal">
+            {% if item %}{{ item.precio_total|soles }}{% else %}S/ 0.00{% endif %}
+          </strong>
+        </div>
+      </div>
+
+      <div class="modal-f">
+        {% if is_edit %}
+        <button
+          type="button"
+          class="btn btn-danger"
+          hx-get="{% url 'scanner:item_delete_form' session.id item.id %}"
+          hx-target="#modal-root"
+          hx-swap="innerHTML"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+          </svg>
+          Eliminar
+        </button>
+        {% else %}
+        <span></span>
+        {% endif %}
+        <div class="grp">
+          <button type="button" class="btn btn-flat" data-close-modal>Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {% if is_edit %}Guardar cambios{% else %}Agregar al detalle{% endif %}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

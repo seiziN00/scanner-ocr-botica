@@ -1,0 +1,130 @@
+{% load scanner_extras %}
+{# Región refrescable de la validación (HTMX la reemplaza completa). #}
+<header class="card-h">
+  <div class="hl">
+    <div>
+      <h2>Validar y corregir datos</h2>
+      <p class="sub">
+        {{ items_count }} ítem{{ items_count|pluralize:"s" }} en el comprobante ·
+        toca una fila para editarla
+      </p>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="btn btn-add"
+    hx-get="{% url 'scanner:item_create_form' session.id %}"
+    hx-target="#modal-root"
+    hx-swap="innerHTML"
+  >
+    <span class="plus">+</span> Agregar
+  </button>
+</header>
+
+<div class="tbl-wrap">
+  {% if items %}
+  {# Versión escritorio: tabla densa #}
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th class="num">Cantidad</th>
+        <th>Laboratorio</th>
+        <th>Lote</th>
+        <th>Vencimiento</th>
+        <th>UND</th>
+        <th class="num">P. Unit.</th>
+        <th class="num">P. Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr
+        tabindex="0"
+        title="Clic para editar o eliminar"
+        hx-get="{% url 'scanner:item_update_form' session.id item.id %}"
+        hx-target="#modal-root"
+        hx-swap="innerHTML"
+        data-edit-url="{% url 'scanner:item_update_form' session.id item.id %}"
+      >
+        <td class="c-prod" title="{{ item.producto }}">{{ item.producto }}</td>
+        <td class="num">{{ item.cantidad }}</td>
+        <td>{{ item.laboratorio|default:"—" }}</td>
+        <td class="mono">{{ item.lote|default:"—" }}</td>
+        <td>{% include "scanner/partials/item_pill.html" %}</td>
+        <td class="mono">{{ item.unidad }}</td>
+        <td class="num">{{ item.precio_unitario|soles }}</td>
+        <td class="num total">{{ item.precio_total|soles }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {# Versión móvil: tarjetas táctiles #}
+  <div class="item-cards">
+    {% for item in items %}
+    <button
+      type="button"
+      class="item-card"
+      hx-get="{% url 'scanner:item_update_form' session.id item.id %}"
+      hx-target="#modal-root"
+      hx-swap="innerHTML"
+    >
+      <span class="p-name">{{ item.producto }}</span>
+      <span class="p-meta">
+        {{ item.cantidad }} {{ item.unidad }} ·
+        {% if item.laboratorio %}{{ item.laboratorio }} · {% endif %}
+        {% include "scanner/partials/item_pill.html" %}
+        {% if item.lote %} · Lote <span class="mono">{{ item.lote }}</span>{% endif %}
+      </span>
+      <span class="p-price">
+        <strong>{{ item.precio_total|soles }}</strong>
+        <span>{{ item.precio_unitario|soles }} c/u</span>
+      </span>
+    </button>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="items-empty">
+    Sin productos todavía.<br />Usa <strong>+ Agregar</strong> para añadir el primero.
+  </p>
+  {% endif %}
+</div>
+
+<footer class="card-f split">
+  <div class="totals">
+    <span class="t-label">Total del comprobante</span>
+    <span>
+      <em>{{ items_count }} ítem{{ items_count|pluralize:"s" }}</em>
+      <strong>{{ items_total|soles }}</strong>
+    </span>
+  </div>
+  <div class="actions">
+    <a
+      class="btn btn-ghost"
+      href="{% url 'scanner:export' session.id %}"
+      download
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M7 10l5 5 5-5M12 15V3"/>
+      </svg>
+      Exportar Excel
+    </a>
+    <button
+      type="button"
+      class="btn btn-danger"
+      hx-get="{% url 'scanner:close' session.id %}"
+      hx-target="#modal-root"
+      hx-swap="innerHTML"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18.36 6.64a9 9 0 1 1-12.72 0"/>
+        <path d="M12 2v10"/>
+      </svg>
+      Terminar trabajo
+    </button>
+  </div>
+</footer>

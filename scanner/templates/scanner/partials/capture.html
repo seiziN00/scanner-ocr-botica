@@ -1,0 +1,81 @@
+{# Etapa de captura: cámara en vivo, hasta N fotos, vista previa y envío. #}
+<section
+  class="card"
+  id="captureCard"
+  data-max-images="{{ max_images }}"
+  data-process-url="{% url 'scanner:process' %}"
+>
+  <header class="card-h">
+    <div class="hl">
+      <span class="tick">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </span>
+      <div>
+        <h2>Fotografiar comprobante</h2>
+        <p class="sub">Toma hasta {{ max_images }} fotos del documento de compra</p>
+      </div>
+    </div>
+    <span class="chip" id="photoCounter">0 de {{ max_images }} fotos</span>
+  </header>
+
+  {# --- vista de cámara --- #}
+  <div class="camera-stage" id="cameraStage">
+    <video id="videoFeed" playsinline autoplay muted hidden></video>
+    <div class="camera-frame" id="cameraFrame" hidden>
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+    </div>
+    <div class="camera-idle" id="cameraIdle">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      <p id="cameraMessage">
+        Activa la cámara y fotografía la factura o boleta. Procura buena luz y
+        que el documento llene el encuadre.
+      </p>
+      <button type="button" class="btn btn-primary" id="btnStartCam">
+        Activar cámara
+      </button>
+      <button type="button" class="btn btn-ghost" id="btnGallery">
+        Subir desde galería
+      </button>
+      <input type="file" id="fileInput" accept="{{ accept_types }}"
+             multiple hidden />
+    </div>
+  </div>
+
+  {# --- barra del obturador --- #}
+  <div class="shutter-bar" id="shutterBar" hidden>
+    <button type="button" class="btn btn-ghost" id="btnStopCam">Listo</button>
+    <button type="button" class="btn-shutter" id="btnShutter"
+            aria-label="Tomar foto"></button>
+    <span class="shutter-count" id="shutterCount">0/{{ max_images }}</span>
+  </div>
+
+  {# --- miniaturas --- #}
+  <div class="thumbs" id="thumbs" hidden></div>
+
+  {# --- estado de procesamiento --- #}
+  {% include "scanner/partials/processing.html" %}
+
+  <footer class="card-f">
+    <button type="button" class="btn btn-primary btn-block" id="btnProcess" disabled>
+      Procesar comprobante
+    </button>
+    <p class="f-hint">
+      Revisa que las fotos se lean bien antes de procesar. Puedes eliminar y
+      repetir cualquiera.
+    </p>
+    <p class="f-hint" id="resumeHint" hidden>
+      ¿Tenías un trabajo sin terminar?
+      <a href="#" id="resumeLink">Continuar donde me quedé</a>
+    </p>
+  </footer>
+</section>
+<canvas id="captureCanvas" hidden></canvas>

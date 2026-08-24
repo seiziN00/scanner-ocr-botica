@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Scanner · Vincular con la PC{% endblock %}
+{% block brand_sub %}Botica Bio Vida · Emparejar{% endblock %}
+
+{% block content %}
+<main class="layout single" style="max-width:560px;margin:0 auto">
+  <section class="card">
+    {% if stage == "confirm" %}
+    <header class="card-h">
+      <div class="hl">
+        <div>
+          <h2>Enviar trabajo a la PC</h2>
+          <p class="sub">Elige el comprobante que quieres continuar en la computadora</p>
+        </div>
+      </div>
+    </header>
+
+    {% if messages %}
+    <div style="padding:14px 16px 0">
+      {% for message in messages %}
+      <div class="alert err">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if sessions %}
+    <form method="post" style="padding:18px" id="pairForm">
+      {% csrf_token %}
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+        {% for s in sessions %}
+        <label class="item-card" style="cursor:pointer">
+          <input type="radio" name="session_id" value="{{ s.id }}"
+                 data-session-radio {% if forloop.first %}checked{% endif %}
+                 style="align-self:center" />
+          <span class="p-name">
+            Comprobante del {{ s.created_at|date:"d/m/Y H:i" }}
+          </span>
+          <span class="p-meta">
+            {{ s.items.count }} ítem{{ s.items.count|pluralize:"s" }} ·
+            {{ s.get_status_display }}
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">
+        Vincular con la PC
+      </button>
+      <p class="f-hint">
+        El celular puede desconectarse después: la PC seguirá trabajando sola.
+      </p>
+    </form>
+    {% else %}
+    <div class="qr-panel">
+      <p>No hay ningún comprobante activo en este momento para enviar.</p>
+      <a class="btn btn-primary" href="{% url 'scanner:index' %}">Ir al escáner</a>
+    </div>
+    {% endif %}
+
+    {% elif stage == "done" %}
+    <div class="qr-panel">
+      <span class="tick" style="width:52px;height:52px;border-radius:14px">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </span>
+      <h3>Trabajo enviado a la PC</h3>
+      <p>
+        La computadora ya abrió el comprobante. Puedes guardar el celular o
+        seguir revisando desde aquí.
+      </p>
+      <a class="btn btn-primary" href="{% url 'scanner:workspace' session.id %}">
+        Ver el comprobante aquí
+      </a>
+      <a class="btn btn-ghost" href="{% url 'scanner:index' %}">Escanear otro comprobante</a>
+    </div>
+
+    {% else %}
+    <div class="qr-panel">
+      <h3>Este código ya no sirve</h3>
+      <p>
+        El código QR caducó o ya fue utilizado. Pide uno nuevo en la computadora
+        e inténtalo otra vez.
+      </p>
+      <a class="btn btn-primary" href="{% url 'scanner:index' %}">Volver al inicio</a>
+    </div>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}
+
+{% if stage == "confirm" %}
+{% block body_extra %}
+<script>
+  (function () {
+    "use strict";
+    /* Preselecciona la última sesión usada en este celular */
+    try {
+      const last = localStorage.getItem("farmascan_session");
+      if (!last) return;
+      const match = last.match(/s\/([0-9a-f-]{36})\//);
+      if (!match) return;
+      const radio = document.querySelector(
+        'input[data-session-radio][value="' + match[1] + '"]'
+      );
+      if (radio) radio.checked = true;
+    } catch (e) {}
+  })();
+</script>
+{% endblock %}
+{% endif %}

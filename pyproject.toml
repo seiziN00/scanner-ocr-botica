@@ -5,6 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.141.1",
-    "uvicorn>=0.52.4",
+    "channels-redis>=4.3.0",
+    "channels[daphne]>=4.3.2",
+    "cloudinary>=1.46.0",
+    "django>=6.1",
+    "django-cloudinary-storage>=0.3.0",
+    "django-environ>=0.14.0",
+    "openpyxl>=3.1.5",
+    "pillow>=12.3.0",
+    "psycopg[binary]>=3.3.4",
+    "qrcode>=8.2",
+    "requests>=2.34.2",
+    "whitenoise>=6.12.0",
 ]

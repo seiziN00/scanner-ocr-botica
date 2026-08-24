@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a3a2a" />
+    <title>{% block title %}Scanner{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'scanner/css/main.css' %}" />
+    {# HTMX servido localmente: la app debe funcionar en la red local de la botica #}
+    <script src="{% static 'scanner/js/vendor/htmx.min.js' %}"></script>
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="{% url 'scanner:index' %}" style="text-decoration:none;color:inherit">
+        <span class="brand-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+            <path d="M9.5 3h5v6.5H21v5h-6.5V21h-5v-6.5H3v-5h6.5z" />
+          </svg>
+        </span>
+        <div>
+          <strong>Scanner</strong><small>{% block brand_sub %}Botica Bio Vida{% endblock %}</small>
+        </div>
+      </a>
+      {% block topbar_right %}{% endblock %}
+    </header>
+
+    {% block content %}{% endblock %}
+
+    {# Raíz para modales renderizados por HTMX #}
+    <div id="modal-root"></div>
+    <div id="flash"></div>
+    <div id="toasts" aria-live="polite"></div>
+
+    <script src="{% static 'scanner/js/app.js' %}"></script>
+    {% block body_extra %}{% endblock %}
+  </body>
+</html>

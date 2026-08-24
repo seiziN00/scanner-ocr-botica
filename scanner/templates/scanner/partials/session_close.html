@@ -1,0 +1,38 @@
+{# Modal de confirmación para terminar el trabajo. Se inserta en #modal-root. #}
+<div class="overlay">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="cTitle">
+    <div class="modal-h">
+      <div>
+        <h3 id="cTitle">Terminar este trabajo</h3>
+        <p>Se cerrará en todos los equipos conectados</p>
+      </div>
+      <button type="button" class="icon-btn" data-close-modal aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-b" style="display:block">
+      <p style="font-size:14px;line-height:1.6">
+        ¿Seguro que deseas terminar? El comprobante con
+        <strong>{{ items_count }} ítem{{ items_count|pluralize:"s" }}</strong>
+        dejará de estar disponible en este celular y en la PC.
+      </p>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5">
+        Consejo: si necesitas un respaldo, descarga primero el archivo Excel.
+      </p>
+    </div>
+    <div class="modal-f">
+      <span></span>
+      <div class="grp">
+        <button type="button" class="btn btn-flat" data-close-modal>Cancelar</button>
+        <form hx-post="{{ form_action }}" hx-target="#modal-root" hx-swap="innerHTML"
+              style="display:contents">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger-solid">Sí, terminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

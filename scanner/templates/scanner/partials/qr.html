@@ -1,0 +1,29 @@
+{# Panel del QR de emparejamiento (solo contiene una URL con token temporal). #}
+<header class="card-h">
+  <div class="hl">
+    <span class="tick">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>
+      </svg>
+    </span>
+    <div>
+      <h2>Escanea con el celular</h2>
+      <p class="sub">El código caduca en {{ ttl }} segundos y solo sirve una vez</p>
+    </div>
+  </div>
+</header>
+<div class="qr-panel">
+  <div class="qr-box">{{ qr_svg|safe }}</div>
+  <p>
+    Abre la cámara del celular que tiene el trabajo y apunta a este código.
+    Confirma el envío en el celular y la PC abrirá el mismo comprobante
+    automáticamente.
+  </p>
+  <span class="pair-status" id="pairStatus">
+    <span class="dot-live"></span> Esperando al celular…
+  </span>
+</div>

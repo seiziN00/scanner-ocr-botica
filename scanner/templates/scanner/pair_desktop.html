@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Scanner · Continuar en PC{% endblock %}
+{% block brand_sub %}Botica Bio Vida · Emparejar equipo{% endblock %}
+
+{% block content %}
+<main class="layout single" style="max-width:640px;margin:0 auto">
+  <section class="card">
+    {% if stage == "password" %}
+    <header class="card-h">
+      <div class="hl">
+        <span class="tick">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </span>
+        <div>
+          <h2>Traer trabajo desde el celular</h2>
+          <p class="sub">Ingresa la contraseña de emparejamiento</p>
+        </div>
+      </div>
+    </header>
+    <form method="post" style="padding:20px">
+      {% csrf_token %}
+      {% if error %}
+      <div class="alert err">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+        </svg>
+        {{ error }}
+      </div>
+      {% endif %}
+      <div class="field" style="margin-bottom:16px">
+        <label for="password">Contraseña de emparejamiento</label>
+        <input id="password" name="password" type="password" required
+               autocomplete="off" placeholder="••••••" autofocus />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Mostrar código QR</button>
+      <p class="f-hint">
+        La contraseña la define el encargado de la botica. El código QR caduca en pocos minutos.
+      </p>
+    </form>
+    {% else %}
+    {% include "scanner/partials/qr.html" %}
+    {% endif %}
+  </section>
+</main>
+{% endblock %}
+
+{% if stage == "qr" %}
+{% block body_extra %}
+<script>
+  (function () {
+    "use strict";
+    const statusUrl = "{{ status_url }}";
+    const pill = document.getElementById("pairStatus");
+    if (!statusUrl) return;
+    const timer = setInterval(async () => {
+      try {
+        const resp = await fetch(statusUrl);
+        const data = await resp.json();
+        if (data.state === "ready") {
+          clearInterval(timer);
+          if (pill) pill.textContent = "¡Listo! Abriendo el trabajo…";
+          window.location.href = data.session_url;
+        } else if (data.state === "expired") {
+          clearInterval(timer);
+          if (pill) pill.textContent = "El código caducó. Recarga la página para generar otro.";
+        }
+      } catch (e) {
+        /* reintenta en el siguiente intervalo */
+      }
+    }, 2000);
+  })();
+</script>
+{% endblock %}
+{% endif %}

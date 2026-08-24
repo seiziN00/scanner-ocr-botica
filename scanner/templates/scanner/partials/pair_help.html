@@ -1,0 +1,35 @@
+{# Modal: instrucciones para continuar el trabajo en la PC. #}
+<div class="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+    <div class="modal-h">
+      <div>
+        <h3 id="pTitle">Continuar en la PC</h3>
+        <p>Sin repetir el escaneo ni la lectura automática</p>
+      </div>
+      <button type="button" class="icon-btn" data-close-modal aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-b" style="display:block">
+      <ol style="font-size:14px;line-height:1.9;padding-left:20px">
+        <li>En la computadora abre: <strong class="mono">{{ pair_url }}</strong></li>
+        <li>Ingresa la contraseña de emparejamiento.</li>
+        <li>Aparecerá un código QR en la pantalla de la PC.</li>
+        <li>Escanéalo con la cámara de este celular y confirma.</li>
+      </ol>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.5">
+        Tu trabajo se copia al instante a la PC y puedes apagar o guardar el celular:
+        la computadora seguirá funcionando de forma independiente.
+      </p>
+    </div>
+    <div class="modal-f">
+      <span></span>
+      <div class="grp">
+        <button type="button" class="btn btn-primary" data-close-modal>Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>

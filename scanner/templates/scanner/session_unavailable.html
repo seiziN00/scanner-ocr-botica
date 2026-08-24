@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Scanner · Trabajo no disponible{% endblock %}
+
+{% block content %}
+<main class="layout single" style="max-width:560px;margin:0 auto">
+  <section class="card">
+    <div class="qr-panel">
+      <h3>Este trabajo ya no está disponible</h3>
+      <p>
+        El comprobante que buscas caducó o fue cerrado. Escanea un nuevo
+        comprobante para comenzar de nuevo.
+      </p>
+      <a class="btn btn-primary" href="{% url 'scanner:index' %}">Ir al escáner</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

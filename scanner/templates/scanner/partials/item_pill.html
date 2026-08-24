@@ -1,0 +1,3 @@
+{% load scanner_extras %}
+{# Pastilla de vencimiento compartida por la tabla (desktop) y las tarjetas (móvil). #}
+<span class="pill {% if item.vencimiento|vence_pronto %}warn{% endif %}">{% if item.vencimiento|vence_pronto %}⚠ {% endif %}{{ item.vencimiento|fmt_venc }}</span>
