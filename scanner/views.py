@@ -53,15 +53,6 @@ def _items_context(session: ImportSession) -> dict:
         "items": items,
         "items_count": len(items),
         "items_total": sum((i.precio_total for i in items), start=0),
-        # Contexto extra para renderizar el formulario de "Agregar" dentro de
-        # <template id="tpl-add-item"> en session.html (modal client-side).
-        # Es estático por sesión; barato de incluir aquí.
-        "add_form_action": reverse("scanner:item_create", args=[session.id]),
-        "add_is_edit": False,
-        "add_item": None,
-        "add_errors": {},
-        "add_values": _EMPTY_ITEM_VALUES,
-        "unidades": UNIDAD_CHOICES,
     }
 
 

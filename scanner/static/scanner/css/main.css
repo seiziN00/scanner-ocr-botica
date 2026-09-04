@@ -639,34 +639,10 @@ video {
   border-top-color: var(--green);
   animation: spin 0.9s linear infinite;
 }
-.spinner.is-sm {
-  width: 36px;
-  height: 36px;
-  border-width: 4px;
-}
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* Modal ligero de carga (aparece al instante mientras llega el contenido) */
-.modal-loading {
-  width: auto;
-  max-width: 220px;
-  margin: 0;
-  background: #fff;
-  padding: 26px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  box-shadow: 0 40px 80px -30px rgba(8, 26, 20, 0.55);
-  /* anula el translateY del bottom-sheet: queda centrada incluso en móvil */
-  transform: none !important;
-}
-.overlay.open .modal-loading {
-  transform: none !important;
 }
 .processing h3 {
   font-family: var(--display);
