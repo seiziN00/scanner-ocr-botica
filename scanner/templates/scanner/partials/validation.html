@@ -12,10 +12,8 @@
   </div>
   <button
     type="button"
+    id="btn-add-item"
     class="btn btn-add"
-    hx-get="{% url 'scanner:item_create_form' session.id %}"
-    hx-target="#modal-root"
-    hx-swap="innerHTML"
   >
     <span class="plus">+</span> Agregar
   </button>

@@ -76,6 +76,13 @@
     {% include "scanner/partials/validation.html" %}
   </section>
 </main>
+
+{# ── PLANTILLA del modal "Agregar producto" (cero red) ──
+   Se clona a #modal-root al pulsar el botón #btn-add-item (ver app.js).
+   Vive en <template> para que HTMX no le attach listeners hasta clonarse. #}
+<template id="tpl-add-item">
+  {% include "scanner/partials/item_form.html" with form_action=add_form_action is_edit=add_is_edit item=add_item errors=add_errors values=add_values unidades=unidades %}
+</template>
 {% endblock %}
 
 {% block body_extra %}
