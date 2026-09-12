@@ -1,0 +1,32 @@
+{% load botica_extras %}
+{# Contenido de #kpis: las 5 tarjetas de métricas. #}
+<div class="metric">
+  <span class="metric__label">
+    Ventas · {% if rango == 'hoy' %}hoy{% elif rango == 'mes' %}este mes{% else %}{{ desde|fecha }} – {{ hasta|fecha }}{% endif %}
+  </span>
+  <span class="metric__value mono">{{ kpis.ingresos|soles }}</span>
+  <span class="metric__delta">{{ kpis.tickets }} ticket{{ kpis.tickets|pluralize:"s" }} emitido{{ kpis.tickets|pluralize:"s" }}</span>
+</div>
+<div class="metric">
+  <span class="metric__label">Tickets emitidos</span>
+  <span class="metric__value">{{ kpis.tickets }}</span>
+  <span class="metric__delta">en el periodo</span>
+</div>
+<a class="metric metric--warn clickable" href="{% url 'botica:panel' %}?f=t3"
+   hx-get="{% url 'botica:panel' %}?f=t3" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Por vencer (90 días)</span>
+  <span class="metric__value">{{ kpis.por_vencer }}</span>
+  <span class="metric__delta">productos en vigilancia</span>
+</a>
+<a class="metric metric--alert clickable" href="{% url 'botica:inventario' %}?estado=bajo"
+   hx-get="{% url 'botica:inventario' %}?estado=bajo" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Stock bajo mínimo</span>
+  <span class="metric__value">{{ kpis.stock_bajo }}</span>
+  <span class="metric__delta">requieren reposición</span>
+</a>
+<a class="metric metric--alert clickable" href="{% url 'botica:inventario' %}?estado=agotado"
+   hx-get="{% url 'botica:inventario' %}?estado=agotado" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Agotados</span>
+  <span class="metric__value">{{ kpis.agotados }}</span>
+  <span class="metric__delta">sin unidades</span>
+</a>

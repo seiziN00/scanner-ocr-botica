@@ -1,0 +1,6 @@
+{% include "botica/partials/panel_venc_rows.html" %}
+{% comment %}Respuesta HTMX de /panel/vencimientos/: las filas van a #venc-rows y
+   los conteos/estado activo de las pills se actualizan out-of-band.{% endcomment %}
+<div class="pills" id="filtros-venc" hx-swap-oob="innerHTML">
+  {% include "botica/partials/panel_pills.html" %}
+</div>

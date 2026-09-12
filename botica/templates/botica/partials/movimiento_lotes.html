@@ -1,0 +1,4 @@
+{# Opciones del datalist #aj-lotes: lotes con stock del producto elegido. #}
+{% for lote in lotes %}
+<option value="{{ lote.codigo_lote }}">{{ lote.codigo_lote }} · stock {{ lote.stock }} · vence {{ lote.fecha_vencimiento|date:"m/Y" }}</option>
+{% endfor %}

@@ -1,6 +1,6 @@
 import io
 
-from django.test import Client, TestCase
+from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 from PIL import Image
 
@@ -209,3 +209,71 @@ class PairingTests(TestCase):
         )
         resp = self.client.get(reverse("scanner:pair_status", args=[token.token]))
         self.assertEqual(resp.json()["state"], "ready")
+
+
+class OcrStreamTests(TransactionTestCase):
+    """ws/ocr/<sesión>/: la app móvil empuja JSON, los clientes reciben <tr>.
+
+    TransactionTestCase: el consumidor accede a la BD desde otro hilo
+    (database_sync_to_async) y no vería la transacción de TestCase.
+    """
+
+    def _app(self):
+        """URLRouter real: pobla scope['url_route'] como en producción."""
+        from channels.routing import URLRouter
+
+        from .routing import websocket_urlpatterns
+
+        return URLRouter(websocket_urlpatterns)
+
+    async def test_item_json_se_convierte_en_fila_html(self):
+        from channels.testing import WebsocketCommunicator
+
+        session = await ImportSession.objects.acreate(
+            status=ImportSession.Status.READY
+        )
+        comm = WebsocketCommunicator(self._app(), f"/ws/ocr/{session.id}/")
+        connected, _ = await comm.connect()
+        self.assertTrue(connected)
+
+        await comm.send_json_to(
+            {"producto": "Amoxicilina 500mg", "cantidad": 12,
+             "precio_unitario": "0.80", "unidad": "CAP", "lote": "C-2291",
+             "vencimiento": "2026-08"}
+        )
+        frame = await comm.receive_from(timeout=3)
+        # La fila renderizada + fragmentos OOB de conteo/total
+        self.assertIn("<tr", frame)
+        self.assertIn("Amoxicilina 500mg", frame)
+        self.assertIn('hx-swap-oob="true"', frame)
+        self.assertIn("ocr-items-count", frame)
+        self.assertEqual(await session.items.acount(), 1)
+        await comm.disconnect()
+
+    async def test_sesion_inexistente_cierra_4404(self):
+        import uuid
+
+        from channels.testing import WebsocketCommunicator
+
+        comm = WebsocketCommunicator(self._app(), f"/ws/ocr/{uuid.uuid4()}/")
+        connected, _ = await comm.connect()
+        self.assertTrue(connected)
+        event = await comm.receive_output(timeout=3)
+        self.assertEqual(event["type"], "websocket.close")
+        self.assertEqual(event["code"], 4404)
+        await comm.disconnect()
+
+    async def test_payload_invalido_no_persiste(self):
+        from channels.testing import WebsocketCommunicator
+
+        session = await ImportSession.objects.acreate(
+            status=ImportSession.Status.READY
+        )
+        comm = WebsocketCommunicator(self._app(), f"/ws/ocr/{session.id}/")
+        connected, _ = await comm.connect()
+        self.assertTrue(connected)
+        await comm.send_json_to({"producto": "", "cantidad": -3})
+        frame = await comm.receive_from(timeout=3)
+        self.assertIn("inválido", frame)
+        self.assertEqual(await session.items.acount(), 0)
+        await comm.disconnect()

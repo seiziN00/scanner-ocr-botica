@@ -1,0 +1,49 @@
+{% load botica_extras %}
+<section class="view">
+  <header class="view-head">
+    <div>
+      <p class="kicker">Panel de control</p>
+      <h1 class="view-title" id="saludo">Hola, {{ request.user.nombre_corto }}</h1>
+      <p class="view-sub"><span class="mono" id="fecha"></span></p>
+    </div>
+  </header>
+
+  <!-- ===== Filtro de rango para los KPIs de ventas =====
+       Cada pill pide SOLO la tira de métricas (#kpis); la barra de pills
+       se actualiza sola vía hx-swap-oob en la respuesta. -->
+  <div class="pills" id="filtros-rango" role="group" aria-label="Rango de fechas">
+    {% include "botica/partials/panel_rango_pills.html" %}
+  </div>
+
+  <!-- ===== Métricas rápidas ===== -->
+  <div class="metrics" id="kpis">
+    {% include "botica/partials/panel_kpis.html" %}
+  </div>
+
+  <!-- ===== Control de vencimientos ===== -->
+  <div class="panel-block card">
+    <div class="panel-block__head">
+      <h2 class="panel-block__title">Control de vencimientos</h2>
+      <div class="pills" id="filtros-venc" role="group" aria-label="Filtrar por vencimiento">
+        {% include "botica/partials/panel_pills.html" %}
+      </div>
+    </div>
+
+    <div class="tbl-wrap tbl-wrap--flush">
+      <table class="tbl" id="tabla-venc">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th class="num">Stock</th>
+            <th>Lote</th>
+            <th>Fecha vencimiento</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="venc-rows">
+          {% include "botica/partials/panel_venc_rows.html" %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

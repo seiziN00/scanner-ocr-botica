@@ -1,0 +1,83 @@
+{% load botica_extras %}
+<header class="view-head">
+  <div>
+    <p class="kicker">Punto de venta</p>
+    <h1 class="view-title">Nueva venta</h1>
+    <p class="view-sub">Caja 01 · Ticket <span class="mono" data-ticket-number>N° {{ ticket }}</span> · <span class="mono" data-fecha></span>
+    </p>
+  </div>
+</header>
+<div class="container-pos-ticket">
+  <section class="view pos-view">
+    <div class="pos">
+      <!-- ===== Columna 65% : buscador + resultados ===== -->
+      <div class="pos-main">
+        <label class="searchbar">
+          <svg class="ic ic--md">
+            <use href="#i-search" />
+          </svg>
+          {% comment %}Búsqueda server-side (nombre / principio activo / código).
+             Solo se swappea #pos-results → el input no pierde el foco.{% endcomment %}
+          <input id="pos-search" type="search" name="q" placeholder="Busca por nombre, principio activo o código…"
+            autocomplete="off" spellcheck="false"
+            hx-get="{% url 'botica:pos_buscar' %}"
+            hx-trigger="input changed delay:250ms, search"
+            hx-target="#pos-results" hx-swap="innerHTML">
+          <span class="searchbar__kbd" aria-hidden="true">/</span>
+        </label>
+
+        {% comment %}Tras un cobro, app.js dispara "refreshPos" en body y esta región
+           se recarga sola para reflejar el stock descontado.{% endcomment %}
+        <div class="tbl-wrap pos-results" id="pos-results"
+             hx-get="{% url 'botica:pos_buscar' %}"
+             hx-trigger="refreshPos from:body"
+             hx-include="#pos-search"
+             hx-target="#pos-results" hx-swap="innerHTML">
+          {% include "botica/partials/pos_results.html" %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Columna 35% : ticket fijo (desktop) ===== -->
+  <aside class="ticket" aria-label="Voucher de venta">
+    <div class="ticket-wrapper">
+      <div class="ticket__head">
+        <div class="ticket__title">
+          <span style="font-weight: bolder; font-family: sans-serif; color: var(--green)">Bio Vida</span>
+          <span class="mono">Venta en curso</span>
+        </div>
+        <div class="ticket__meta mono" style="display: flex; justify-content: space-between;">
+          <span data-cart-count="">0 productos</span>
+          <span data-fecha></span>
+        </div>
+      </div>
+      <ul class="ticket__list" data-cart-list=""></ul>
+      <p class="ticket__empty" data-cart-empty>Agrega productos desde el buscador.</p>
+      <div class="ticket__foot" data-cart-foot="">
+        <div class="ticket__row ticket__row--gdesc">
+          <label for="gdesc-a">Dscto. general</label>
+          <input class="input input--mono input--sm" type="number" min="0" step="0.10" value="0" id="gdesc-a"
+            data-global-desc="" inputmode="decimal" max="0.00" style="text-align: right;">
+        </div>
+        <div class="ticket__total">
+          <span>Total</span>
+          <span class="mono" data-cart-total="">S/ 0.00</span>
+        </div>
+        <button class="btn btn--primary btn--block btn--xl" type="button" data-open-checkout="" disabled>Cobrar
+          <span class="mono" data-cart-btn-total="">S/ 0.00</span>
+        </button>
+      </div>
+      <div class="ticket__cut" aria-hidden="true"></div>
+    </div>
+  </aside>
+</div>
+<!-- ===== Mobile: FAB + Bottom Sheet ===== -->
+<button class="cart-fab" type="button" data-open-sheet>
+  <svg class="ic">
+    <use href="#i-pos" />
+  </svg>
+  <span class="cart-fab__n mono" data-cart-count-fab-button>0</span>
+  <span class="mono" data-cart-btn-total>S/ 0.00</span>
+</button>
+<div class="sheet-backdrop" data-close-sheet hidden></div>

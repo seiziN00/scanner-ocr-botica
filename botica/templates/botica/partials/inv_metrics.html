@@ -1,0 +1,30 @@
+{% load botica_extras %}
+{# Contenido de #inv-metrics: las 5 métricas de cabecera del inventario. #}
+<div class="metric">
+  <span class="metric__label">Productos</span>
+  <span class="metric__value">{{ metricas.total_productos }}</span>
+  <span class="metric__delta">SKUs activos</span>
+</div>
+<div class="metric">
+  <span class="metric__label">Unidades totales</span>
+  <span class="metric__value mono">{{ metricas.total_unidades }}</span>
+  <span class="metric__delta">en todos los lotes</span>
+</div>
+<a class="metric metric--alert" href="{% url 'botica:inventario' %}?estado=bajo"
+   hx-get="{% url 'botica:inventario' %}?estado=bajo" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Stock bajo mínimo</span>
+  <span class="metric__value">{{ metricas.stock_bajo }}</span>
+  <span class="metric__delta">requieren reposición</span>
+</a>
+<a class="metric metric--warn" href="{% url 'botica:panel' %}?f=t6"
+   hx-get="{% url 'botica:panel' %}?f=t6" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Por vencer (3–6 meses)</span>
+  <span class="metric__value">{{ metricas.por_vencer }}</span>
+  <span class="metric__delta">productos en vigilancia</span>
+</a>
+<a class="metric metric--alert" href="{% url 'botica:inventario' %}?estado=agotado"
+   hx-get="{% url 'botica:inventario' %}?estado=agotado" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+  <span class="metric__label">Agotados</span>
+  <span class="metric__value">{{ metricas.agotados }}</span>
+  <span class="metric__delta">sin unidades</span>
+</a>

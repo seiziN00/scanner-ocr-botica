@@ -1,0 +1,48 @@
+{% load botica_extras %}
+<section class="view">
+  <header class="view-head">
+    <div>
+      <p class="kicker">Inventario</p>
+      <h1 class="view-title">Productos</h1>
+      <p class="view-sub">{{ metricas.total_productos }} SKUs activos
+        {% if estado == 'bajo' %}· filtrando: stock bajo{% elif estado == 'agotado' %}· filtrando: agotados{% endif %}</p>
+    </div>
+    <div class="view-head__actions">
+      {% comment %}Búsqueda server-side: nombre, principio activo, laboratorio o código.
+         Solo se swappea #inv-rows → el input jamás pierde el foco.{% endcomment %}
+      <input class="input inv-search" type="search" placeholder="Filtrar productos…"
+             id="inv-q" name="q" value="{{ q }}" aria-label="Filtrar productos"
+             hx-get="{% url 'botica:inventario_filas' %}"
+             hx-trigger="input changed delay:300ms, search"
+             hx-target="#inv-rows" hx-swap="innerHTML">
+      <button class="btn btn--primary" type="button" data-open-modal="#modal-ajuste"
+              hx-get="{% url 'botica:movimiento_form' %}" hx-target="#ajuste-slot" hx-swap="innerHTML">
+        <svg class="ic ic--sm"><use href="#i-plus"/></svg> Registrar movimiento
+      </button>
+    </div>
+  </header>
+
+  {# Métricas: se refrescan solas cuando se registra un movimiento #}
+  <div class="metrics" id="inv-metrics"
+       hx-get="{% url 'botica:inventario_metricas' %}"
+       hx-trigger="movimientoRegistrado from:body" hx-swap="innerHTML">
+    {% include "botica/partials/inv_metrics.html" %}
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl tbl--click" id="inv-table">
+      <thead>
+        <tr>
+          <th>Código</th><th>Producto</th><th class="num">Stock</th><th class="num">Precio unitario</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="inv-rows"
+             hx-get="{% url 'botica:inventario_filas' %}"
+             hx-trigger="movimientoRegistrado from:body"
+             hx-include="#inv-q" hx-target="#inv-rows" hx-swap="innerHTML">
+        {% include "botica/partials/inv_rows.html" %}
+      </tbody>
+    </table>
+  </div>
+  <p class="pos-hint">Toca un producto para abrir su <strong>Kardex</strong> de movimientos.</p>
+</section>

@@ -1,0 +1,6 @@
+{% include "botica/partials/panel_kpis.html" %}
+{% comment %}Respuesta HTMX de /panel/kpis/: las tarjetas van a #kpis y la barra
+   de pills se actualiza out-of-band (estado activo + visibilidad custom).{% endcomment %}
+<div class="pills" id="filtros-rango" hx-swap-oob="innerHTML">
+  {% include "botica/partials/panel_rango_pills.html" %}
+</div>

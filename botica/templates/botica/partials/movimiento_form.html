@@ -1,0 +1,89 @@
+{% comment %}Formulario del modal "Registrar movimiento". Se carga perezoso en
+   #ajuste-slot al abrir el modal. En error de validación se re-renderiza
+   con `errors` y `values`; en éxito la vista devuelve 204 + HX-Trigger
+   (movimientoRegistrado) y app.js cierra el modal.{% endcomment %}
+<form class="modal__card" id="form-ajuste" method="post"
+      hx-post="{% url 'botica:movimiento' %}" hx-target="#ajuste-slot" hx-swap="innerHTML">
+  {% csrf_token %}
+  <button class="modal__x" type="button" data-close-modal aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>
+  <p class="kicker">Inventario</p>
+  <h2 class="modal__title">Registrar movimiento manual</h2>
+
+  {% if errors.general %}
+  <p class="field__error" role="alert">{{ errors.general }}</p>
+  {% endif %}
+
+  <div class="field">
+    <label class="field__label" for="aj-prod">Producto</label>
+    {% comment %}Al cambiar, HTMX pide los lotes con stock (incluye ?producto=<id>
+       automáticamente por ser el control que dispara el evento){% endcomment %}
+    <select class="input" id="aj-prod" name="producto" required
+            hx-get="{% url 'botica:movimiento_lotes' %}"
+            hx-target="#aj-lotes" hx-swap="innerHTML" hx-trigger="change">
+      <option value="" disabled {% if not producto_sel %}selected{% endif %}>Elige un producto…</option>
+      {% for p in productos %}
+      <option value="{{ p.pk }}" {% if producto_sel|default:'' == p.pk|stringformat:'i' %}selected{% endif %}>
+        {{ p.codigo }} — {{ p.nombre }}{% if p.concentracion %} {{ p.concentracion }}{% endif %}{% if p.presentacion %} · {{ p.presentacion }}{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    {% if errors.producto %}<span class="field__error">{{ errors.producto }}</span>{% endif %}
+  </div>
+
+  <div class="grid-2">
+    <div class="field">
+      <label class="field__label" for="aj-tipo">Tipo</label>
+      <select class="input" id="aj-tipo" name="tipo">
+        <option value="entrada" {% if values.direccion == 'entrada' %}selected{% endif %}>Entrada</option>
+        <option value="salida" {% if not values.direccion or values.direccion == 'salida' %}selected{% endif %}>Salida</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="aj-cant">Cantidad (unidades)</label>
+      <input class="input input--mono" id="aj-cant" name="cantidad" type="number" min="1" step="1"
+             value="{{ values.cantidad|default:1 }}" required>
+      {% if errors.cantidad %}<span class="field__error">{{ errors.cantidad }}</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="aj-motivo">Motivo</label>
+    <select class="input" id="aj-motivo" name="motivo">
+      <!-- data-para controla qué opciones se habilitan según el Tipo -->
+      <option value="compra" data-para="entrada">Compra / Ingreso de mercadería</option>
+      <option value="ajuste" data-para="entrada">Ajuste por conteo físico</option>
+      <option value="venta" data-para="salida">Venta Comercial</option>
+      <option value="vencido" data-para="salida">Medicamento Vencido / Caducado</option>
+      <option value="deterioro" data-para="salida">Deterioro / Rotura / Derrame</option>
+      <option value="uso_interno" data-para="salida">Retiro para uso interno / Botiquín</option>
+      <option value="donacion" data-para="salida">Donación / Muestras Médicas</option>
+    </select>
+  </div>
+
+  <div class="grid-2">
+    <div class="field">
+      <label class="field__label" for="aj-lote">Lote</label>
+      <input class="input input--mono" id="aj-lote" name="lote" placeholder="LT-0000"
+             list="aj-lotes" value="{{ values.codigo_lote }}" autocomplete="off">
+      <datalist id="aj-lotes"></datalist>
+      <span class="field__opt">Salidas: vacío = FIFO automático por vencimiento</span>
+    </div>
+    <div class="field">
+      <label class="field__label" for="aj-venc">Vencimiento <span class="field__opt">(solo entradas)</span></label>
+      <input class="input input--mono" id="aj-venc" name="vencimiento" type="month"
+             value="{{ values.vencimiento }}">
+      {% if errors.vencimiento %}<span class="field__error">{{ errors.vencimiento }}</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="aj-obs">Observación <span class="field__opt">(opcional)</span></label>
+    <textarea class="input input--area" id="aj-obs" name="observacion" rows="2"
+              placeholder="Detalle del movimiento…">{{ values.observacion }}</textarea>
+  </div>
+
+  <div class="modal__foot">
+    <button class="btn btn--ghost" type="button" data-close-modal>Cancelar</button>
+    <button class="btn btn--primary" type="submit">Registrar movimiento</button>
+  </div>
+</form>

@@ -1,0 +1,25 @@
+{% load botica_extras %}
+{% comment %}Contenido de #filtros-rango: pills de rango + inputs de fecha custom.
+   Se incluye en dashboard.html y se re-swappea vía hx-swap-oob.{% endcomment %}
+<button class="pill {% if rango == 'hoy' %}is-on{% endif %}" type="button" data-rango="hoy"
+        hx-get="{% url 'botica:panel_kpis' %}" hx-vals='{"rango": "hoy"}'
+        hx-target="#kpis" hx-swap="innerHTML">Hoy</button>
+<button class="pill {% if rango == 'mes' %}is-on{% endif %}" type="button" data-rango="mes"
+        hx-get="{% url 'botica:panel_kpis' %}" hx-vals='{"rango": "mes"}'
+        hx-target="#kpis" hx-swap="innerHTML">Este mes</button>
+<button class="pill {% if rango == 'custom' %}is-on{% endif %}" type="button" data-rango="custom"
+        hx-get="{% url 'botica:panel_kpis' %}" hx-vals='{"rango": "custom"}'
+        hx-include="#rango-desde, #rango-hasta"
+        hx-target="#kpis" hx-swap="innerHTML">Rango</button>
+<span class="rango-custom" {% if rango != 'custom' %}hidden{% endif %}>
+  <input class="input input--mono input--sm" type="date" id="rango-desde" name="desde"
+         value="{{ desde|date:'Y-m-d' }}" aria-label="Desde"
+         hx-get="{% url 'botica:panel_kpis' %}" hx-trigger="change"
+         hx-vals='{"rango": "custom"}' hx-include="#rango-desde, #rango-hasta"
+         hx-target="#kpis" hx-swap="innerHTML">
+  <input class="input input--mono input--sm" type="date" id="rango-hasta" name="hasta"
+         value="{{ hasta|date:'Y-m-d' }}" aria-label="Hasta"
+         hx-get="{% url 'botica:panel_kpis' %}" hx-trigger="change"
+         hx-vals='{"rango": "custom"}' hx-include="#rango-desde, #rango-hasta"
+         hx-target="#kpis" hx-swap="innerHTML">
+</span>

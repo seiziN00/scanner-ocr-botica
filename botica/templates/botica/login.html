@@ -1,0 +1,73 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar · Botica Bio Vida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'botica/css/app.css' %}">
+  <script defer src="{% static 'botica/js/app.js' %}"></script>
+</head>
+<body class="page-login">
+
+  {# Símbolos SVG que usa esta pantalla (login no extiende base.html) #}
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-cross" viewBox="0 0 24 24"><path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    </defs>
+  </svg>
+
+  <main class="login">
+    <form class="login__card card" method="post" action="{% url 'botica:login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">
+      {% csrf_token %}
+      <span class="login__mark" aria-hidden="true">
+        <svg class="ic ic--lg"><use href="#i-cross"/></svg>
+      </span>
+
+      <p class="kicker">Sistema interno</p>
+      <h1 class="login__title">Botica Bio Vida</h1>
+      <p class="login__sub">Acceso de turno · Caja 01</p>
+
+      {% if bloqueado %}
+      <p class="field__error" role="alert">
+        Demasiados intentos. Espera unos minutos antes de volver a probar.
+      </p>
+      {% elif error %}
+      <p class="field__error" role="alert">{{ error }}</p>
+      {% endif %}
+
+      <div class="field">
+        <label class="field__label" for="email">Correo electrónico</label>
+        <input class="input" id="email" name="email" type="email"
+               placeholder="tucorreo@gmail.com" autocomplete="username" required
+               {% if not bloqueado %}autofocus{% endif %}>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="pw">Contraseña</label>
+        <div class="pw-wrap">
+          <input class="input" id="pw" name="password" type="password"
+                 placeholder="••••••••" autocomplete="current-password" required>
+          <button class="pw-toggle" type="button" data-pw-toggle aria-label="Mostrar contraseña">
+            <svg class="ic"><use href="#i-eye"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn--primary btn--block" type="submit" {% if bloqueado %}disabled{% endif %}>Ingresar</button>
+
+      <a class="login__recover" href="#">Recuperar acceso por E-mail
+        <svg class="ic ic--sm"><use href="#i-chev-r"/></svg>
+      </a>
+    </form>
+
+    <p class="login__foot mono">v1.0 · Solo personal autorizado</p>
+  </main>
+
+</body>
+</html>

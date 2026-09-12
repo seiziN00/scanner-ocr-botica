@@ -1,0 +1,16 @@
+{# Contenido de #filtros-venc: pills con conteos por categoría. #}
+<button class="pill {% if filtro_venc == 'todos' %}is-on{% endif %}" type="button"
+        hx-get="{% url 'botica:panel_vencimientos' %}" hx-vals='{"f": "todos"}'
+        hx-target="#venc-rows" hx-swap="innerHTML">Todos <span class="pill__n">{{ conteos_venc.todos }}</span></button>
+<button class="pill pill--red {% if filtro_venc == 'vencidos' %}is-on{% endif %}" type="button"
+        hx-get="{% url 'botica:panel_vencimientos' %}" hx-vals='{"f": "vencidos"}'
+        hx-target="#venc-rows" hx-swap="innerHTML">Vencidos <span class="pill__n">{{ conteos_venc.vencidos }}</span></button>
+<button class="pill pill--amber {% if filtro_venc == 'mes' %}is-on{% endif %}" type="button"
+        hx-get="{% url 'botica:panel_vencimientos' %}" hx-vals='{"f": "mes"}'
+        hx-target="#venc-rows" hx-swap="innerHTML">Este mes <span class="pill__n">{{ conteos_venc.mes }}</span></button>
+<button class="pill {% if filtro_venc == 't3' %}is-on{% endif %}" type="button"
+        hx-get="{% url 'botica:panel_vencimientos' %}" hx-vals='{"f": "t3"}'
+        hx-target="#venc-rows" hx-swap="innerHTML">Próx. 3 meses <span class="pill__n">{{ conteos_venc.t3 }}</span></button>
+<button class="pill {% if filtro_venc == 't6' %}is-on{% endif %}" type="button"
+        hx-get="{% url 'botica:panel_vencimientos' %}" hx-vals='{"f": "t6"}'
+        hx-target="#venc-rows" hx-swap="innerHTML">Próx. 6 meses <span class="pill__n">{{ conteos_venc.t6 }}</span></button>

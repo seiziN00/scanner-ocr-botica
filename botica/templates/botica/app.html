@@ -1,0 +1,4 @@
+{% extends "botica/base.html" %}
+{% comment %}Página completa para acceso directo (refresh / sin JS / URL pegada).
+   Las navegaciones HTMX reciben solo el partial (ver views.render_app).{% endcomment %}
+{% block content %}{% include content_partial %}{% endblock %}

@@ -1,0 +1,31 @@
+{% load botica_extras %}
+{% comment %}Filas de #kdx-movs: historial con saldo corrido. Las SALIDA enlazan
+   al ticket de venta (modal cargado por HTMX en #modal-root).{% endcomment %}
+{% for mov in page.object_list %}
+<tr class="{% if mov.tipo == 'ENTRADA' or mov.tipo == 'AJUSTE' %}mv-entrada{% elif mov.tipo == 'SALIDA' %}mv-salida{% else %}mv-merma{% endif %}">
+  <td class="mono">{{ mov.fecha|fecha }}</td>
+  <td class="mv-tipo">{{ mov.get_tipo_display }}</td>
+  <td>
+    {{ mov.motivo }}
+    {% if mov.tipo == 'SALIDA' and mov.content_type_id == venta_ct and mov.object_id %}
+    <button class="row-link ticket-look" type="button"
+            hx-get="{% url 'botica:venta_detalle' mov.object_id %}"
+            hx-target="#modal-root" hx-swap="innerHTML">Ver ticket →</button>
+    {% endif %}
+  </td>
+  <td class="mono">{{ mov.lote.codigo_lote }}</td>
+  <td class="num mono mv-q {% if mov.cantidad > 0 %}mv-q--in{% elif mov.tipo == 'SALIDA' %}mv-q--out{% else %}mv-q--loss{% endif %}">{{ mov.cantidad|cantidad_signo }}</td>
+  <td class="num mono">{{ mov.saldo_resultante }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="6" class="empty-cell">Sin movimientos en este filtro.</td></tr>
+{% endfor %}
+{% if page.has_next %}
+<tr class="load-more"><td colspan="6">
+  <button class="btn btn--ghost btn--block" type="button"
+          hx-get="{% url 'botica:kardex_movimientos' producto.pk %}?page={{ page.next_page_number }}&tipo={{ tipo_sel }}{% if mdesde %}&desde={{ mdesde|date:'Y-m-d' }}{% endif %}{% if mhasta %}&hasta={{ mhasta|date:'Y-m-d' }}{% endif %}"
+          hx-target="closest tr" hx-swap="outerHTML">
+    Cargar más movimientos
+  </button>
+</td></tr>
+{% endif %}

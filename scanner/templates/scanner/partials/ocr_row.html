@@ -1,0 +1,20 @@
+{% load scanner_extras %}
+{% comment %}Fila de la tabla de validación enviada por el WebSocket OCR
+   (ws/ocr/<sesión>/). Mismo markup que las filas de validation.html.{% endcomment %}
+<tr
+  tabindex="0"
+  title="Clic para editar o eliminar"
+  hx-get="{% url 'scanner:item_update_form' session_id item.id %}"
+  hx-target="#modal-root"
+  hx-swap="innerHTML"
+  data-edit-url="{% url 'scanner:item_update_form' session_id item.id %}"
+>
+  <td class="c-prod" title="{{ item.producto }}">{{ item.producto }}</td>
+  <td class="num">{{ item.cantidad }}</td>
+  <td>{{ item.laboratorio|default:"—" }}</td>
+  <td class="mono">{{ item.lote|default:"—" }}</td>
+  <td>{% include "scanner/partials/item_pill.html" %}</td>
+  <td class="mono">{{ item.unidad }}</td>
+  <td class="num">{{ item.precio_unitario|soles }}</td>
+  <td class="num total">{{ item.precio_total|soles }}</td>
+</tr>

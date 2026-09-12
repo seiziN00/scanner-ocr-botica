@@ -1,0 +1,13 @@
+{% load botica_extras %}
+{# Contenido de #kdx-stats: cabecera numérica del kardex. #}
+<div class="kdx-stat"><span class="kdx-stat__lbl">Stock actual</span><span class="kdx-stat__val">{{ producto.stock_total }}</span></div>
+<div class="kdx-stat"><span class="kdx-stat__lbl">Costo unit.</span><span class="kdx-stat__val mono">{{ producto.costo_unitario|soles }}</span></div>
+<div class="kdx-stat"><span class="kdx-stat__lbl">Stock mínimo</span><span class="kdx-stat__val">{{ producto.stock_minimo }}</span></div>
+<div class="kdx-stat"><span class="kdx-stat__lbl">Precio venta</span><span class="kdx-stat__val mono">{{ producto.precio_venta|soles }}</span></div>
+<div class="kdx-stat"><span class="kdx-stat__lbl">Valor inventario</span><span class="kdx-stat__val mono">{{ valor_inventario|soles }}</span></div>
+<button class="btn btn--primary" type="button"
+        data-open-modal="#modal-ajuste"
+        hx-get="{% url 'botica:movimiento_form' %}?producto={{ producto.pk }}"
+        hx-target="#ajuste-slot" hx-swap="innerHTML">
+  <svg class="ic ic--sm"><use href="#i-plus"/></svg> Registrar movimiento
+</button>

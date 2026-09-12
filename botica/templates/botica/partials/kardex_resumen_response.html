@@ -1,0 +1,6 @@
+{% include "botica/partials/kardex_resumen.html" %}
+{% comment %}Respuesta HTMX de /inventario/kardex/<id>/resumen/: el resumen va a
+   #kdx-resumen y las pills de periodo se actualizan out-of-band.{% endcomment %}
+<div class="pills" id="kdx-periodos" hx-swap-oob="innerHTML">
+  {% include "botica/partials/kardex_periodo_pills.html" %}
+</div>

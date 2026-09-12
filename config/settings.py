@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "channels",
 
     # local 
+    "botica",
     "scanner",
 ]
 
@@ -111,6 +112,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Autenticación: usuario personalizado (login solo con email)
+AUTH_USER_MODEL = "botica.User"
+LOGIN_URL = "botica:login"
+LOGIN_REDIRECT_URL = "botica:panel"
+LOGOUT_REDIRECT_URL = "botica:login"
+
+# Rate limiting del login (intentos por IP dentro de una ventana)
+LOGIN_RATE_LIMIT = env.int("LOGIN_RATE_LIMIT", default=5)
+LOGIN_RATE_WINDOW_SECONDS = env.int("LOGIN_RATE_WINDOW_SECONDS", default=300)
+
 # Capa de channels
 REDIS_URL = env("REDIS_URL")
 
@@ -146,6 +157,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "scanner" / "static",
+    BASE_DIR / "botica" / "static",
 ]
 
 STORAGES = {
@@ -193,3 +205,7 @@ PAIRING_PASSWORD = env("PAIRING_PASSWORD")
 
 # Tiempo de espera para hacer pairing (sincronizar celular con PC) en minutos.
 PAIRING_TOKEN_TTL_SECONDS = env.int("PAIRING_TOKEN_TTL_SECONDS")
+
+# Rate limiting del WebSocket OCR (mensajes por conexión dentro de la ventana)
+OCR_WS_RATE_LIMIT = env.int("OCR_WS_RATE_LIMIT", default=60)
+OCR_WS_RATE_WINDOW_SECONDS = env.int("OCR_WS_RATE_WINDOW_SECONDS", default=60)

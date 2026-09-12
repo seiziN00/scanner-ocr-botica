@@ -1,0 +1,32 @@
+{% load botica_extras %}
+{# Filas de #inv-rows: datos AGREGADOS del producto (los lotes viven en el kardex). #}
+{% for p in page.object_list %}
+<tr data-key="{{ p.nombre|lower }} {{ p.principio_activo|lower }} {{ p.codigo|lower }}">
+  <td class="mono">{{ p.codigo }}</td>
+  <td>
+    <a class="row-link" href="{{ p.get_absolute_url }}"
+       hx-get="{{ p.get_absolute_url }}" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+      {{ p.nombre }}{% if p.concentracion %} {{ p.concentracion }}{% endif %}{% if p.presentacion %} · {{ p.presentacion }}{% endif %}</a>
+    {% if p.principio_activo %}<span class="row-code">{{ p.principio_activo }}</span>{% endif %}
+  </td>
+  <td class="num mono">
+    {% if p.stock_total <= p.stock_minimo %}<span class="stock-low">{{ p.stock_total }}</span>
+    {% else %}{{ p.stock_total }}{% endif %}
+  </td>
+  <td class="num mono">{{ p.precio_venta|soles }}</td>
+  <td class="num"><svg class="ic ic--sm row-chev"><use href="#i-chev-r"/></svg></td>
+</tr>
+{% empty %}
+<tr><td colspan="5" class="empty-cell">Sin coincidencias.</td></tr>
+{% endfor %}
+{% if page.has_next %}
+{% comment %}Paginación server-side: el botón se reemplaza a sí mismo por la
+   siguiente página de filas (outerHTML sobre su propio <tr>).{% endcomment %}
+<tr class="load-more"><td colspan="5">
+  <button class="btn btn--ghost btn--block" type="button"
+          hx-get="{% url 'botica:inventario_filas' %}?q={{ q|urlencode }}&estado={{ estado }}&page={{ page.next_page_number }}"
+          hx-target="closest tr" hx-swap="outerHTML">
+    Cargar más (pág. {{ page.next_page_number }} de {{ page.paginator.num_pages }})
+  </button>
+</td></tr>
+{% endif %}

@@ -4,6 +4,12 @@
 {% block title %}Scanner · Validar comprobante{% endblock %}
 {% block brand_sub %}Botica Bio Vida · Validación{% endblock %}
 
+{% block head_extra %}
+{% comment %}Extensión ws de HTMX 2.x: el tbody de validación anexa los ítems OCR
+   que la app móvil empuja por ws/ocr/<sesión>/{% endcomment %}
+<script src="{% static 'scanner/js/vendor/ws.js' %}"></script>
+{% endblock %}
+
 {% block topbar_right %}
 <nav class="steps" aria-label="Progreso">
   <span class="step done"><span class="n">✓</span><span class="lbl">Captura</span></span>

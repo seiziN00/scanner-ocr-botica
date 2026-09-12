@@ -1,0 +1,12 @@
+{% load botica_extras %}
+{# Contenido de #kdx-resumen: desglose financiero y de cantidades. #}
+<div class="kdx-stats">
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Entradas</span><span class="kdx-stat__val mv-q--in">+{{ resumen.entradas }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Ventas (uds.)</span><span class="kdx-stat__val mv-q--out">−{{ resumen.salidas }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Ventas (S/)</span><span class="kdx-stat__val mono">{{ resumen.ventas_soles|soles }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Mermas</span><span class="kdx-stat__val mv-q--loss">−{{ resumen.mermas }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Autoconsumo</span><span class="kdx-stat__val mv-q--loss">−{{ resumen.autoconsumo }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Ajustes</span><span class="kdx-stat__val">{{ resumen.ajustes|cantidad_signo }}</span></div>
+  <div class="kdx-stat"><span class="kdx-stat__lbl">Variación neta</span><span class="kdx-stat__val">{{ resumen.variacion|cantidad_signo }} uds.</span></div>
+</div>
+<p class="view-sub"><span class="mono">Desde {{ desde|fecha }} hasta {{ hasta|fecha }}</span></p>

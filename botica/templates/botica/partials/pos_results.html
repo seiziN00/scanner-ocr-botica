@@ -1,0 +1,67 @@
+{% load botica_extras %}
+{% comment %}Contenido de #pos-results: tabla (desktop) + tarjetas (mobile).
+   Las data-attributes alimentan el popover de presentaciones y el carrito
+   (ver botica/js/app.js): data-p-* precios y data-s-* stock por presentación.{% endcomment %}
+<table class="tbl" id="pos-table">
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th class="num">Precio</th>
+      <th class="num">Stock</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in productos %}
+    <tr data-key="{{ p.key }}" data-name="{{ p.nombre }}" data-code="{{ p.codigo }}"
+        data-p-uni="{{ p.p_uni|numattr }}" data-p-blis="{{ p.p_blis|numattr }}" data-p-caja="{{ p.p_caja|numattr }}"
+        data-s-uni="{{ p.s_uni }}" data-s-blis="{{ p.s_blis }}" data-s-caja="{{ p.s_caja }}">
+      <td>
+        <strong>{{ p.nombre }}</strong>
+        <span class="row-code mono">{{ p.codigo }}</span>
+      </td>
+      <td class="num mono">{{ p.p_uni|soles }}</td>
+      <td class="num mono">
+        {% if p.agotado %}<span class="stock-low">0</span>
+        {% elif p.bajo %}<span class="stock-low">{{ p.stock }}</span>
+        {% else %}{{ p.stock }}{% endif %}
+      </td>
+      <td class="num">
+        <button class="btn btn--ghost btn-add" type="button" data-add="" {% if p.agotado %}disabled{% endif %}>
+          <svg class="ic ic--sm">
+            <use href="#i-plus"></use>
+          </svg>
+          <span class="add-text">Agregar</span>
+        </button>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4" class="empty-cell">Sin coincidencias. Revisa el nombre o el código.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{# Versión móvil: tarjetas (CSS las muestra solo en pantallas chicas) #}
+<div class="item-cards">
+  {% for p in productos %}
+  <div class="item-card" data-key="{{ p.key }}" data-name="{{ p.nombre }}" data-code="{{ p.codigo }}"
+       data-p-uni="{{ p.p_uni|numattr }}" data-p-blis="{{ p.p_blis|numattr }}" data-p-caja="{{ p.p_caja|numattr }}"
+       data-s-uni="{{ p.s_uni }}" data-s-blis="{{ p.s_blis }}" data-s-caja="{{ p.s_caja }}">
+    <span class="p-name"><strong>{{ p.nombre }}</strong></span>
+    <div class="p-meta">
+      <span class="p-venta">P. venta: <span class="mono num-grande">{{ p.p_uni|soles }}</span></span>
+      <span class="p-stock">Stock: <span class="mono num-grande">{{ p.stock }}</span></span>
+      <span class="p-lote">Cód: {{ p.codigo }}</span>
+    </div>
+    <span class="p-add">
+      <button class="btn btn--ghost btn-add" type="button" data-add="" {% if p.agotado %}disabled{% endif %}>
+        <svg class="ic ic--sm">
+          <use href="#i-plus"></use>
+        </svg>
+        <span class="add-text">Agregar</span>
+      </button>
+    </span>
+  </div>
+  {% endfor %}
+</div>

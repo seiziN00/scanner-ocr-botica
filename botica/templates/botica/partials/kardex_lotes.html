@@ -1,0 +1,21 @@
+{% load botica_extras %}
+{# Filas de #kdx-lotes: existencia física por lote + fila de totales. #}
+{% for lote in lotes %}
+<tr>
+  <td class="mono">{{ lote.codigo_lote }}</td>
+  <td class="mono">{{ lote.fecha_vencimiento|fecha }}</td>
+  <td class="num mono">{{ lote.stock }}</td>
+  <td class="num mono">{{ lote.costo|soles }}</td>
+  <td class="num mono">{{ lote.valor_inventario|soles }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="5" class="empty-cell">Sin stock en lotes.</td></tr>
+{% endfor %}
+{% if lotes %}
+<tr class="row-total">
+  <td colspan="2"><strong>Total</strong></td>
+  <td class="num mono"><strong>{{ stock_lotes }}</strong></td>
+  <td></td>
+  <td class="num mono"><strong>{{ valor_inventario|soles }}</strong></td>
+</tr>
+{% endif %}

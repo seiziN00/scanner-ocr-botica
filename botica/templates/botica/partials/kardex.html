@@ -1,0 +1,99 @@
+{% load botica_extras %}
+<section class="view">
+  <a class="back-link" href="{% url 'botica:inventario' %}"
+     hx-get="{% url 'botica:inventario' %}" hx-target="#app-content" hx-swap="innerHTML" hx-push-url="true">
+    <svg class="ic ic--sm"><use href="#i-back"/></svg> Volver a inventario
+  </a>
+
+  <div class="kdx-head card">
+    <div class="kdx-head__info">
+      <p class="kicker">Kardex de producto</p>
+      <h1 class="view-title">{{ producto.nombre }}{% if producto.concentracion %} {{ producto.concentracion }}{% endif %}{% if producto.presentacion %} · {{ producto.presentacion }}{% endif %}</h1>
+      <div class="kdx-chips">
+        <span class="chip-static mono">SKU {{ producto.codigo }}</span>
+        {% if producto.principio_activo %}<span class="chip-static">{{ producto.principio_activo }}</span>{% endif %}
+        {% if producto.laboratorio %}<span class="chip-static">{{ producto.laboratorio }}</span>{% endif %}
+        {% if producto.estado_stock == 'agotado' %}<span class="badge badge--red badge--dot">Agotado</span>
+        {% elif producto.estado_stock == 'bajo' %}<span class="badge badge--amber badge--dot">Stock bajo</span>
+        {% else %}<span class="badge badge--green badge--dot">Vigencia OK</span>{% endif %}
+      </div>
+    </div>
+    <div class="kdx-stats" id="kdx-stats">
+      {% include "botica/partials/kardex_stats.html" %}
+    </div>
+  </div>
+
+  <!-- ===== Lotes físicos disponibles ===== -->
+  <div class="panel-block card">
+    <div class="panel-block__head">
+      <h2 class="panel-block__title">Lotes disponibles</h2>
+    </div>
+    <div class="tbl-wrap tbl-wrap--flush">
+      <table class="tbl">
+        <thead>
+          <tr><th>Lote</th><th>Vencimiento</th><th class="num">Stock</th><th class="num">Costo unit.</th><th class="num">Valor</th></tr>
+        </thead>
+        <tbody id="kdx-lotes"
+               hx-get="{% url 'botica:kardex_lotes' producto.pk %}"
+               hx-trigger="movimientoRegistrado from:body"
+               hx-target="#kdx-lotes" hx-swap="innerHTML">
+          {% include "botica/partials/kardex_lotes.html" %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== Historial de movimientos (kardex) ===== -->
+  <div class="panel-block card">
+    <div class="panel-block__head">
+      <h2 class="panel-block__title">Historial de movimientos</h2>
+      {# Filtrado server-side: cualquier cambio recarga SOLO #kdx-movs #}
+      <form class="kdx-filtros" id="kdx-filtros"
+            hx-get="{% url 'botica:kardex_movimientos' producto.pk %}"
+            hx-target="#kdx-movs" hx-swap="innerHTML" hx-trigger="change">
+        <select class="input input--sm" name="tipo" aria-label="Tipo de movimiento">
+          <option value="">Todos los tipos</option>
+          {% for val, label in tipos %}
+          <option value="{{ val }}" {% if tipo_sel == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <input class="input input--mono input--sm" type="date" name="desde" value="{{ mdesde|date:'Y-m-d' }}" aria-label="Desde">
+        <input class="input input--mono input--sm" type="date" name="hasta" value="{{ mhasta|date:'Y-m-d' }}" aria-label="Hasta">
+      </form>
+    </div>
+    <div class="tbl-wrap tbl-wrap--flush">
+      <table class="tbl tbl--kdx">
+        <thead>
+          <tr><th>Fecha</th><th>Tipo</th><th>Motivo</th><th>Lote</th><th class="num">Cantidad</th><th class="num">Saldo</th></tr>
+        </thead>
+        <tbody id="kdx-movs"
+               hx-get="{% url 'botica:kardex_movimientos' producto.pk %}"
+               hx-trigger="movimientoRegistrado from:body"
+               hx-include="#kdx-filtros"
+               hx-target="#kdx-movs" hx-swap="innerHTML">
+          {% include "botica/partials/kardex_movimientos.html" %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== Resumen del periodo ===== -->
+  <div class="panel-block card">
+    <div class="panel-block__head">
+      <h2 class="panel-block__title">Resumen del periodo</h2>
+      <div class="pills" id="kdx-periodos" role="group" aria-label="Periodo del resumen">
+        {% include "botica/partials/kardex_periodo_pills.html" %}
+      </div>
+    </div>
+    <div id="kdx-resumen">
+      {% include "botica/partials/kardex_resumen.html" %}
+    </div>
+  </div>
+
+  <div class="kdx-legend">
+    <span><i class="dot dot--green"></i>Entradas</span>
+    <span><i class="dot dot--ink"></i>Salidas comerciales</span>
+    <span><i class="dot dot--amber"></i>Mermas / autoconsumo</span>
+    <span><i class="dot dot--red"></i>Vencidos</span>
+  </div>
+</section>

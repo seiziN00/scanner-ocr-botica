@@ -1,0 +1,27 @@
+{% load botica_extras %}
+{# Filas de #venc-rows: un lote por fila (la existencia física es lo que vence). #}
+{% for lote in vencimientos %}
+<tr data-dias="{{ lote.dias }}">
+  <td>
+    <strong>{{ lote.producto.nombre }}{% if lote.producto.concentracion %} {{ lote.producto.concentracion }}{% endif %}{% if lote.producto.presentacion %} · {{ lote.producto.presentacion }}{% endif %}</strong>
+    <span class="row-code mono">{{ lote.producto.codigo }}</span>
+  </td>
+  <td class="num mono">{{ lote.stock }}</td>
+  <td class="mono">{{ lote.codigo_lote }}</td>
+  <td>
+    <button class="tgl-exp" type="button" aria-pressed="false">
+      <span class="tgl-exp__fecha mono">{{ lote.fecha_vencimiento|fecha }}</span>
+      <span class="tgl-exp__dias">{{ lote.dias|dias_texto }}</span>
+      <svg class="ic ic--sm"><use href="#i-swap"/></svg>
+    </button>
+  </td>
+  <td>
+    {% if lote.dias < 0 %}<span class="badge badge--red badge--dot">Vencido</span>
+    {% elif lote.dias <= 30 %}<span class="badge badge--amber badge--dot">Este mes</span>
+    {% elif lote.dias <= 90 %}<span class="badge badge--green">3 meses</span>
+    {% else %}<span class="badge badge--green">6 meses</span>{% endif %}
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="5" class="empty-cell">No hay productos en este rango.</td></tr>
+{% endfor %}

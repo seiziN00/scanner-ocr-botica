@@ -1,0 +1,37 @@
+{% load botica_extras %}
+{% comment %}Detalle del ticket: se inserta en #modal-root (sin `hidden`, se muestra
+   en cuanto HTMX lo swappea). Lo enlazan las SALIDA del kardex.{% endcomment %}
+<div class="modal" id="modal-venta">
+  <div class="modal__back" data-close-modal></div>
+  <div class="modal__card">
+    <button class="modal__x" type="button" data-close-modal aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>
+    <p class="kicker">Venta</p>
+    <h2 class="modal__title">Ticket {{ venta.ticket }}</h2>
+    <p class="view-sub">
+      <span class="mono">{{ venta.creada_en|fecha }}</span> · {{ venta.get_metodo_pago_display }}
+      {% if venta.vendedor %} · {{ venta.vendedor.nombre_corto }}{% endif %}
+    </p>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>Producto</th><th>Presentación</th><th class="num">Cant.</th><th class="num">P. unit.</th><th class="num">Subtotal</th></tr>
+        </thead>
+        <tbody>
+          {% for item in venta.items.all %}
+          <tr>
+            <td>{{ item.producto.nombre }}{% if item.producto.concentracion %} {{ item.producto.concentracion }}{% endif %}</td>
+            <td>{{ item.get_tipo_unidad_display }}</td>
+            <td class="num mono">{{ item.cantidad }}</td>
+            <td class="num mono">{{ item.precio_unitario|soles }}</td>
+            <td class="num mono">{{ item.subtotal|soles }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="modal__foot">
+      {% if venta.descuento %}<span class="mono">Dscto: {{ venta.descuento|soles }}</span>{% endif %}
+      <strong class="mono">Total {{ venta.total|soles }}</strong>
+    </div>
+  </div>
+</div>

@@ -22,8 +22,10 @@
 </header>
 
 <div class="tbl-wrap">
-  {% if items %}
-  {# Versión escritorio: tabla densa #}
+  {% comment %}Versión escritorio: tabla densa.
+     El tbody escucha el stream OCR (ws/ocr/<sesión>/): la app móvil empuja
+     ítems en JSON y aquí llegan como <tr> listos para anexar (beforeend).
+     El conteo/total del footer se actualizan con fragmentos hx-swap-oob.{% endcomment %}
   <table class="items-table">
     <thead>
       <tr>
@@ -37,7 +39,11 @@
         <th class="num">P. Total</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody
+      hx-ext="ws"
+      ws-connect="/ws/ocr/{{ session.id }}/"
+      hx-swap="beforeend"
+    >
       {% for item in items %}
       <tr
         tabindex="0"
@@ -56,11 +62,18 @@
         <td class="num">{{ item.precio_unitario|soles }}</td>
         <td class="num total">{{ item.precio_total|soles }}</td>
       </tr>
+      {% empty %}
+      <tr class="ocr-empty">
+        <td colspan="8" class="empty-cell">
+          Sin productos todavía. Usa <strong>+ Agregar</strong> para añadir el primero.
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
 
   {# Versión móvil: tarjetas táctiles #}
+  {% if items %}
   <div class="item-cards">
     {% for item in items %}
     <button
@@ -84,10 +97,6 @@
     </button>
     {% endfor %}
   </div>
-  {% else %}
-  <p class="items-empty">
-    Sin productos todavía.<br />Usa <strong>+ Agregar</strong> para añadir el primero.
-  </p>
   {% endif %}
 </div>
 
@@ -95,8 +104,9 @@
   <div class="totals">
     <span class="t-label">Total del comprobante</span>
     <span>
-      <em>{{ items_count }} ítem{{ items_count|pluralize:"s" }}</em>
-      <strong>{{ items_total|soles }}</strong>
+      {# ids: el stream OCR los actualiza vía hx-swap-oob #}
+      <em id="ocr-items-count">{{ items_count }} ítem{{ items_count|pluralize:"s" }}</em>
+      <strong id="ocr-items-total">{{ items_total|soles }}</strong>
     </span>
   </div>
   <div class="actions">

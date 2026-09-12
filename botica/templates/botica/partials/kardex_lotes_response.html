@@ -1,0 +1,6 @@
+{% include "botica/partials/kardex_lotes.html" %}
+{% comment %}Respuesta HTMX de /inventario/kardex/<id>/lotes/: las filas van a
+   #kdx-lotes y la cabecera numérica se actualiza out-of-band.{% endcomment %}
+<div class="kdx-stats" id="kdx-stats" hx-swap-oob="innerHTML">
+  {% include "botica/partials/kardex_stats.html" %}
+</div>

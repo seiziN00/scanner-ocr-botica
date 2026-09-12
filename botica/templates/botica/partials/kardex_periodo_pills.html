@@ -1,0 +1,26 @@
+{# Contenido de #kdx-periodos: pills de periodo + inputs custom. #}
+<button class="pill {% if periodo == '7d' %}is-on{% endif %}" type="button" data-rango="7d"
+        hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-vals='{"periodo": "7d"}'
+        hx-target="#kdx-resumen" hx-swap="innerHTML">7 días</button>
+<button class="pill {% if periodo == '30d' %}is-on{% endif %}" type="button" data-rango="30d"
+        hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-vals='{"periodo": "30d"}'
+        hx-target="#kdx-resumen" hx-swap="innerHTML">30 días</button>
+<button class="pill {% if periodo == 'mes' %}is-on{% endif %}" type="button" data-rango="mes"
+        hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-vals='{"periodo": "mes"}'
+        hx-target="#kdx-resumen" hx-swap="innerHTML">Este mes</button>
+<button class="pill {% if periodo == 'custom' %}is-on{% endif %}" type="button" data-rango="custom"
+        hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-vals='{"periodo": "custom"}'
+        hx-include="#kdx-desde, #kdx-hasta"
+        hx-target="#kdx-resumen" hx-swap="innerHTML">Rango</button>
+<span class="rango-custom" {% if periodo != 'custom' %}hidden{% endif %}>
+  <input class="input input--mono input--sm" type="date" id="kdx-desde" name="desde"
+         value="{{ desde|date:'Y-m-d' }}" aria-label="Desde"
+         hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-trigger="change"
+         hx-vals='{"periodo": "custom"}' hx-include="#kdx-desde, #kdx-hasta"
+         hx-target="#kdx-resumen" hx-swap="innerHTML">
+  <input class="input input--mono input--sm" type="date" id="kdx-hasta" name="hasta"
+         value="{{ hasta|date:'Y-m-d' }}" aria-label="Hasta"
+         hx-get="{% url 'botica:kardex_resumen' producto.pk %}" hx-trigger="change"
+         hx-vals='{"periodo": "custom"}' hx-include="#kdx-desde, #kdx-hasta"
+         hx-target="#kdx-resumen" hx-swap="innerHTML">
+</span>
